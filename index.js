@@ -34,8 +34,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // CORS setup
 app.use(cors({
-    origin: process.env.FRONTEND || 'http://localhost:3000', // Fallback for local development
-    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+    origin: ['https://twitterclonefe.netlify.app'], // Your Netlify frontend URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
 }));
 
