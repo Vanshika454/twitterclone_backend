@@ -10,7 +10,7 @@ const userRoutes = require('./routes/userRoutes');
 const tweetRoutes = require('./routes/tweetRoutes');
 
 //constants
-const port = 3033;
+const port = process.env.PORT || 3033;
 
 //inits
 const app = express();
