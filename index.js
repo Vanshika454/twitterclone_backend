@@ -21,12 +21,12 @@ const connectToMongo = async () => {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
+        console.log("Connected to MongoDB");
     } catch (error) {
-        console.log('Mongo connection Error', error);
+        console.error('Mongo connection Error', error);
     }
 }
 connectToMongo();
-mongoose.connection.once('open', () => console.log("Connected to MongoDB"));
 
 // setup
 app.use(express.json());
@@ -47,10 +47,18 @@ app.use('/api/user', userRoutes);
 app.use('/api/tweet', tweetRoutes);
 app.use('/images', express.static('images'));
 
+// Test route
 app.get('/', (req, res) => {
-    res.send('Hello World');  
+    res.send('Hello World');
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
 });
 
 app.listen(port, () => console.log(`Server is running on port: ${port}`));
+
 
 
