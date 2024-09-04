@@ -1,23 +1,26 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
 const cors = require('cors');
 require('dotenv').config();
 
-//routes
+// routes
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const tweetRoutes = require('./routes/tweetRoutes');
 
-//constants
+// constants
 const port = process.env.PORT || 3033;
 
-//inits
+// inits
 const app = express();
 
 const connectToMongo = async () => {
     try {
-        mongoose.connect(process.env.MONGOURI);
+        await mongoose.connect(process.env.MONGOURI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
     } catch (error) {
         console.log('Mongo connection Error', error);
     }
@@ -25,25 +28,20 @@ const connectToMongo = async () => {
 connectToMongo();
 mongoose.connection.once('open', () => console.log("Connected to MongoDB"));
 
-//setup
+// setup
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// CORS setup
 app.use(cors({
-    origin: process.env.FRONTEND,
+    origin: process.env.FRONTEND || 'http://localhost:3000', // Fallback for local development
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
     credentials: true,
 }));
-app.use(cookieParser({}));
-app.use((req, res, next) => {
-    //for cookies
-    res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND);
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, *');
-    next();
-});
 
-//routes
+app.use(cookieParser());
+
+// routes
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/tweet', tweetRoutes);
@@ -53,5 +51,6 @@ app.get('/', (req, res) => {
     res.send('Hello World');  
 });
 
-app.listen(port, () => console.log(`Server is running on localhost: ${port}`))
+app.listen(port, () => console.log(`Server is running on port: ${port}`));
+
 
